@@ -1,0 +1,28 @@
+name: Auto Quiz Broadcast
+
+on:
+  schedule:
+    # Cron समय UTC में होता है (IST = UTC + 5:30)
+    # उदाहरण: शाम 8:00 PM IST के लिए UTC 14:30 सेट है:
+    - cron: '30 14 * * *'
+  workflow_dispatch: # यह बटन तुरंत मैनुअल टेस्टिंग के लिए है
+
+jobs:
+  run-quiz:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run Quiz Broadcast
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+        run: python send_quiz.py
