@@ -2,10 +2,8 @@ name: Auto Quiz Broadcast
 
 on:
   schedule:
-    # Cron समय UTC में होता है (IST = UTC + 5:30)
-    # उदाहरण: शाम 8:00 PM IST के लिए UTC 14:30 सेट है:
-    - cron: '30 14 * * *'
-  workflow_dispatch: # यह बटन तुरंत मैनुअल टेस्टिंग के लिए है
+    - cron: '58 14 10 11 *'
+  workflow_dispatch:
 
 jobs:
   run-quiz:
