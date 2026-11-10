@@ -8,7 +8,12 @@
       "पटना"
     ],
     "correct_option_id": 1,
-    "time": 15
+    "time": 15,
+    "title": "Active Quiz Set",
+    "desc": "",
+    "target_channels": [
+      "@alakhaandeyClass"
+    ]
   },
   {
     "question": "Q2. भारत का राष्ट्रीय पशु कौन है?",
@@ -19,7 +24,12 @@
       "हिरण"
     ],
     "correct_option_id": 2,
-    "time": 15
+    "time": 15,
+    "title": "Active Quiz Set",
+    "desc": "",
+    "target_channels": [
+      "@alakhaandeyClass"
+    ]
   },
   {
     "question": "Q3. भारत का राष्ट्रीय पक्षी कौन है?",
@@ -30,7 +40,12 @@
       "हंस"
     ],
     "correct_option_id": 1,
-    "time": 15
+    "time": 15,
+    "title": "Active Quiz Set",
+    "desc": "",
+    "target_channels": [
+      "@alakhaandeyClass"
+    ]
   },
   {
     "question": "Q4. ताजमहल कहाँ स्थित है?",
@@ -41,7 +56,12 @@
       "लखनऊ"
     ],
     "correct_option_id": 2,
-    "time": 15
+    "time": 15,
+    "title": "Active Quiz Set",
+    "desc": "",
+    "target_channels": [
+      "@alakhaandeyClass"
+    ]
   },
   {
     "question": "Q5. भारत का राष्ट्रीय फूल कौन सा है?",
@@ -52,7 +72,12 @@
       "सूरजमुखी"
     ],
     "correct_option_id": 1,
-    "time": 15
+    "time": 15,
+    "title": "Active Quiz Set",
+    "desc": "",
+    "target_channels": [
+      "@alakhaandeyClass"
+    ]
   },
   {
     "question": "Q6. सूर्य किस दिशा से निकलता है?",
@@ -63,7 +88,12 @@
       "पूर्व"
     ],
     "correct_option_id": 3,
-    "time": 15
+    "time": 15,
+    "title": "Active Quiz Set",
+    "desc": "",
+    "target_channels": [
+      "@alakhaandeyClass"
+    ]
   },
   {
     "question": "Q7. भारत का संविधान कब लागू हुआ?",
@@ -74,7 +104,12 @@
       "26 नवंबर 1950"
     ],
     "correct_option_id": 1,
-    "time": 15
+    "time": 15,
+    "title": "Active Quiz Set",
+    "desc": "",
+    "target_channels": [
+      "@alakhaandeyClass"
+    ]
   },
   {
     "question": "Q8. पृथ्वी का प्राकृतिक उपग्रह कौन है?",
@@ -85,7 +120,12 @@
       "शुक्र"
     ],
     "correct_option_id": 2,
-    "time": 15
+    "time": 15,
+    "title": "Active Quiz Set",
+    "desc": "",
+    "target_channels": [
+      "@alakhaandeyClass"
+    ]
   },
   {
     "question": "Q9. विश्व का सबसे बड़ा महासागर कौन सा है?",
@@ -96,7 +136,12 @@
       "आर्कटिक महासागर"
     ],
     "correct_option_id": 1,
-    "time": 15
+    "time": 15,
+    "title": "Active Quiz Set",
+    "desc": "",
+    "target_channels": [
+      "@alakhaandeyClass"
+    ]
   },
   {
     "question": "Q10. महात्मा गांधी का जन्म कब हुआ था?",
@@ -107,7 +152,12 @@
       "26 जनवरी 1869"
     ],
     "correct_option_id": 0,
-    "time": 15
+    "time": 15,
+    "title": "Active Quiz Set",
+    "desc": "",
+    "target_channels": [
+      "@alakhaandeyClass"
+    ]
   },
   {
     "question": "Q11. भारत का राष्ट्रगान किसने लिखा?",
@@ -118,7 +168,12 @@
       "बंकिम चंद्र"
     ],
     "correct_option_id": 1,
-    "time": 15
+    "time": 15,
+    "title": "Active Quiz Set",
+    "desc": "",
+    "target_channels": [
+      "@alakhaandeyClass"
+    ]
   },
   {
     "question": "Q12. कंप्यूटर का दिमाग किसे कहा जाता है?",
@@ -129,7 +184,12 @@
       "मॉनिटर"
     ],
     "correct_option_id": 2,
-    "time": 15
+    "time": 15,
+    "title": "Active Quiz Set",
+    "desc": "",
+    "target_channels": [
+      "@alakhaandeyClass"
+    ]
   },
   {
     "question": "Q13. एक सप्ताह में कितने दिन होते हैं?",
@@ -140,7 +200,12 @@
       "8"
     ],
     "correct_option_id": 2,
-    "time": 15
+    "time": 15,
+    "title": "Active Quiz Set",
+    "desc": "",
+    "target_channels": [
+      "@alakhaandeyClass"
+    ]
   },
   {
     "question": "Q14. भारत की सबसे लंबी नदी कौन सी है?",
@@ -151,7 +216,12 @@
       "कावेरी"
     ],
     "correct_option_id": 1,
-    "time": 15
+    "time": 15,
+    "title": "Active Quiz Set",
+    "desc": "",
+    "target_channels": [
+      "@alakhaandeyClass"
+    ]
   },
   {
     "question": "Q15. लाल ग्रह किसे कहा जाता है?",
@@ -162,7 +232,12 @@
       "शनि"
     ],
     "correct_option_id": 2,
-    "time": 15
+    "time": 15,
+    "title": "Active Quiz Set",
+    "desc": "",
+    "target_channels": [
+      "@alakhaandeyClass"
+    ]
   },
   {
     "question": "Q16. भारत के पहले प्रधानमंत्री कौन थे?",
@@ -173,7 +248,12 @@
       "लाल बहादुर शास्त्री"
     ],
     "correct_option_id": 1,
-    "time": 15
+    "time": 15,
+    "title": "Active Quiz Set",
+    "desc": "",
+    "target_channels": [
+      "@alakhaandeyClass"
+    ]
   },
   {
     "question": "Q17. पानी का रासायनिक सूत्र क्या है?",
@@ -184,7 +264,12 @@
       "NaCl"
     ],
     "correct_option_id": 2,
-    "time": 15
+    "time": 15,
+    "title": "Active Quiz Set",
+    "desc": "",
+    "target_channels": [
+      "@alakhaandeyClass"
+    ]
   },
   {
     "question": "Q18. जंगल का राजा किसे कहा जाता है?",
@@ -195,7 +280,12 @@
       "भालू"
     ],
     "correct_option_id": 1,
-    "time": 15
+    "time": 15,
+    "title": "Active Quiz Set",
+    "desc": "",
+    "target_channels": [
+      "@alakhaandeyClass"
+    ]
   },
   {
     "question": "Q19. भारत में कितने राज्य हैं?",
@@ -206,7 +296,12 @@
       "30"
     ],
     "correct_option_id": 1,
-    "time": 15
+    "time": 15,
+    "title": "Active Quiz Set",
+    "desc": "",
+    "target_channels": [
+      "@alakhaandeyClass"
+    ]
   },
   {
     "question": "Q20. विश्व पर्यावरण दिवस कब मनाया जाता है?",
@@ -217,6 +312,11 @@
       "1 मई"
     ],
     "correct_option_id": 0,
-    "time": 15
+    "time": 15,
+    "title": "Active Quiz Set",
+    "desc": "",
+    "target_channels": [
+      "@alakhaandeyClass"
+    ]
   }
 ]
