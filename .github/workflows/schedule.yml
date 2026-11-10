@@ -2,7 +2,7 @@ name: Auto Quiz Broadcast
 
 on:
   schedule:
-    - cron: '2 15 10 11 *'
+    - cron: '10 15 * * *'
   workflow_dispatch:
 
 jobs:
