@@ -6,7 +6,7 @@ import requests
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 if not BOT_TOKEN:
-    raise ValueError("Error: BOT_TOKEN secret nahi mila! GitHub Secrets check karein.")
+    raise ValueError("Error: BOT_TOKEN secret nahi mila!")
 
 def send_to_channel(chat_id, quizzes, title, desc):
     start_msg = f"⚡ <b>{title}</b>\n"
@@ -14,14 +14,14 @@ def send_to_channel(chat_id, quizzes, title, desc):
         start_msg += f"📝 {desc}\n"
     start_msg += f"\n📊 कुल प्रश्न: {len(quizzes)}\n👇 <i>तैयार रहें...</i>"
 
-    # 1. बैनर भेजना
+    # 1. बैनर
     requests.post(
         f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
         json={"chat_id": chat_id, "text": start_msg, "parse_mode": "HTML"}
     )
     time.sleep(2)
 
-    # 2. सवाल भेजना (ठीक 2 सेकंड का अंतराल)
+    # 2. सवाल भेजना (2 सेकंड का अंतराल)
     for idx, q in enumerate(quizzes):
         payload = {
             "chat_id": chat_id,
@@ -38,7 +38,7 @@ def send_to_channel(chat_id, quizzes, title, desc):
         if idx < len(quizzes) - 1:
             time.sleep(2)
 
-    # 3. क्विज़ समाप्त संदेश
+    # 3. समापन संदेश
     end_msg = "🏁 <b>क्विज़ समाप्त!</b>\n\nऊपर दिए गए पोल पर क्लिक करके अपना स्कोर देखें।"
     requests.post(
         f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
@@ -53,7 +53,6 @@ def main():
         print("Quiz data khali hai.")
         return
 
-    # JSON से टारगेट चैनल निकालना
     target_channels = quizzes[0].get("target_channels", ["@alakhaandeyClass"])
     title = quizzes[0].get("title", "Mega Quiz Series")
     desc = quizzes[0].get("desc", "")
@@ -61,7 +60,6 @@ def main():
     if isinstance(target_channels, str):
         target_channels = [target_channels]
 
-    # हर चैनल पर 2 सेकंड के अंतराल पर भेजना
     for ch_id in target_channels:
         print(f"\n--- Broadcasting to: {ch_id} ---")
         send_to_channel(ch_id, quizzes, title, desc)
