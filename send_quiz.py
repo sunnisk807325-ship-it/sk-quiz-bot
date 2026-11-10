@@ -21,7 +21,7 @@ def send_to_channel(chat_id, quizzes, title, desc):
     )
     time.sleep(2)
 
-    # 2. सवाल भेजना (2 सेकंड का अंतराल)
+    # 2. सवाल भेजना (ठीक 2 सेकंड का अंतराल)
     for idx, q in enumerate(quizzes):
         payload = {
             "chat_id": chat_id,
@@ -53,7 +53,7 @@ def main():
         print("Quiz data khali hai.")
         return
 
-    # JSON से चैनल लिस्ट निकालना
+    # JSON से टारगेट चैनल निकालना
     target_channels = quizzes[0].get("target_channels", ["@alakhaandeyClass"])
     title = quizzes[0].get("title", "Mega Quiz Series")
     desc = quizzes[0].get("desc", "")
@@ -61,7 +61,7 @@ def main():
     if isinstance(target_channels, str):
         target_channels = [target_channels]
 
-    # सभी लक्षित चैनलों पर ब्रॉडकास्ट
+    # हर चैनल पर 2 सेकंड के अंतराल पर भेजना
     for ch_id in target_channels:
         print(f"\n--- Broadcasting to: {ch_id} ---")
         send_to_channel(ch_id, quizzes, title, desc)
