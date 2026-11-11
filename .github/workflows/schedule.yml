@@ -2,7 +2,7 @@ name: Auto Multi-Channel Quiz
 
 on:
   schedule:
-    - cron: '40 5 * * *'
+    - cron: '0 2 * * *'
   workflow_dispatch:
 
 jobs:
