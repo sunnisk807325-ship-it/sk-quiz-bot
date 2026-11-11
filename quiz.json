@@ -2,8 +2,8 @@
   "@alakhaandeyClass": {
     "title": "🏆 TITLE: Mega GK Quiz Competition 🧠",
     "desc": "📝 DESCRIPTION:\nइस मजेदार GK Quiz में आपका स्वागत है! इसमें 20 ज्ञानवर्धक सवाल हैं। हर सवाल के 4 विकल्प हैं। देखते हैं आपका ज्ञान कितना तेज है। खेलिए और जीतिए! 🎯",
-    "schedule_time": "2026-11-11T06:30",
-    "cron": "0 1 * * *",
+    "schedule_time": "2026-11-11T11:10",
+    "cron": "40 5 * * *",
     "questions": [
       {
         "question": "Q1. भारत की राजधानी क्या है?",
@@ -13,7 +13,8 @@
           "कोलकाता",
           "पटना"
         ],
-        "correct_option_id": 1
+        "correct_option_id": 1,
+        "time": 15
       },
       {
         "question": "Q2. भारत का राष्ट्रीय पशु कौन है?",
@@ -23,7 +24,8 @@
           "बाघ",
           "हिरण"
         ],
-        "correct_option_id": 2
+        "correct_option_id": 2,
+        "time": 15
       },
       {
         "question": "Q3. भारत का राष्ट्रीय पक्षी कौन है?",
@@ -33,7 +35,8 @@
           "कबूतर",
           "हंस"
         ],
-        "correct_option_id": 1
+        "correct_option_id": 1,
+        "time": 15
       },
       {
         "question": "Q4. ताजमहल कहाँ स्थित है?",
@@ -43,7 +46,8 @@
           "आगरा",
           "लखनऊ"
         ],
-        "correct_option_id": 2
+        "correct_option_id": 2,
+        "time": 15
       },
       {
         "question": "Q5. भारत का राष्ट्रीय फूल कौन सा है?",
@@ -53,7 +57,8 @@
           "चमेली",
           "सूरजमुखी"
         ],
-        "correct_option_id": 1
+        "correct_option_id": 1,
+        "time": 15
       },
       {
         "question": "Q6. सूर्य किस दिशा से निकलता है?",
@@ -63,7 +68,8 @@
           "दक्षिण",
           "पूर्व"
         ],
-        "correct_option_id": 3
+        "correct_option_id": 3,
+        "time": 15
       },
       {
         "question": "Q7. भारत का संविधान कब लागू हुआ?",
@@ -73,7 +79,8 @@
           "2 अक्टूबर 1949",
           "26 नवंबर 1950"
         ],
-        "correct_option_id": 1
+        "correct_option_id": 1,
+        "time": 15
       },
       {
         "question": "Q8. पृथ्वी का प्राकृतिक उपग्रह कौन है?",
@@ -83,7 +90,8 @@
           "चंद्रमा",
           "शुक्र"
         ],
-        "correct_option_id": 2
+        "correct_option_id": 2,
+        "time": 15
       },
       {
         "question": "Q9. विश्व का सबसे बड़ा महासागर कौन सा है?",
@@ -93,7 +101,8 @@
           "अटलांटिक महासागर",
           "आर्कटिक महासागर"
         ],
-        "correct_option_id": 1
+        "correct_option_id": 1,
+        "time": 15
       },
       {
         "question": "Q10. महात्मा गांधी का जन्म कब हुआ था?",
@@ -103,7 +112,8 @@
           "14 नवंबर 1889",
           "26 जनवरी 1869"
         ],
-        "correct_option_id": 0
+        "correct_option_id": 0,
+        "time": 15
       },
       {
         "question": "Q11. भारत का राष्ट्रगान किसने लिखा?",
@@ -113,7 +123,8 @@
           "महात्मा गांधी",
           "बंकिम चंद्र"
         ],
-        "correct_option_id": 1
+        "correct_option_id": 1,
+        "time": 15
       },
       {
         "question": "Q12. कंप्यूटर का दिमाग किसे कहा जाता है?",
@@ -123,7 +134,8 @@
           "CPU",
           "मॉनिटर"
         ],
-        "correct_option_id": 2
+        "correct_option_id": 2,
+        "time": 15
       },
       {
         "question": "Q13. एक सप्ताह में कितने दिन होते हैं?",
@@ -133,7 +145,8 @@
           "7",
           "8"
         ],
-        "correct_option_id": 2
+        "correct_option_id": 2,
+        "time": 15
       },
       {
         "question": "Q14. भारत की सबसे लंबी नदी कौन सी है?",
@@ -143,7 +156,8 @@
           "नर्मदा",
           "कावेरी"
         ],
-        "correct_option_id": 1
+        "correct_option_id": 1,
+        "time": 15
       },
       {
         "question": "Q15. लाल ग्रह किसे कहा जाता है?",
@@ -153,7 +167,8 @@
           "मंगल",
           "शनि"
         ],
-        "correct_option_id": 2
+        "correct_option_id": 2,
+        "time": 15
       },
       {
         "question": "Q16. भारत के पहले प्रधानमंत्री कौन थे?",
@@ -163,7 +178,8 @@
           "डॉ. राजेंद्र प्रसाद",
           "लाल बहादुर शास्त्री"
         ],
-        "correct_option_id": 1
+        "correct_option_id": 1,
+        "time": 15
       },
       {
         "question": "Q17. पानी का रासायनिक सूत्र क्या है?",
@@ -173,7 +189,8 @@
           "H2O",
           "NaCl"
         ],
-        "correct_option_id": 2
+        "correct_option_id": 2,
+        "time": 15
       },
       {
         "question": "Q18. जंगल का राजा किसे कहा जाता है?",
@@ -183,7 +200,8 @@
           "हाथी",
           "भालू"
         ],
-        "correct_option_id": 1
+        "correct_option_id": 1,
+        "time": 15
       },
       {
         "question": "Q19. भारत में कितने राज्य हैं?",
@@ -193,7 +211,8 @@
           "29",
           "30"
         ],
-        "correct_option_id": 1
+        "correct_option_id": 1,
+        "time": 15
       },
       {
         "question": "Q20. विश्व पर्यावरण दिवस कब मनाया जाता है?",
@@ -203,7 +222,8 @@
           "22 अप्रैल",
           "1 मई"
         ],
-        "correct_option_id": 0
+        "correct_option_id": 0,
+        "time": 15
       }
     ]
   }
