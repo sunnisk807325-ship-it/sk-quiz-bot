@@ -19,13 +19,19 @@ def load_quiz_data():
 def run_channel_quiz(channel_id, channel_data):
     questions = channel_data.get('questions', [])
     quiz_title = channel_data.get('title', 'Daily Live Quiz')
+    quiz_desc = channel_data.get('desc', '')  # ऐप से आया हुआ विवरण
     if not questions:
         return
 
-    # 1. स्टार्ट बैनर
+    # 1. स्टार्ट बैनर (टाइटल + डिस्क्रिप्शन)
+    banner_text = f"🔥 <b>{quiz_title}</b> शुरू हो रहा है!\n"
+    if quiz_desc:
+        banner_text += f"\n📝 <i>{quiz_desc}</i>\n"
+    banner_text += f"\n📊 कुल प्रश्न: {len(questions)}\n⚠️ <i>लाइव लीडरबोर्ड चालू है, तेजी से और सही उत्तर दें!</i>"
+
     requests.post(f"{BASE_URL}/sendMessage", json={
         "chat_id": channel_id,
-        "text": f"🔥 <b>{quiz_title}</b> शुरू हो रहा है!\n\n⚠️ <i>लाइव लीडरबोर्ड चालू है, तेजी से और सही उत्तर दें!</i>",
+        "text": banner_text,
         "parse_mode": "HTML"
     })
     time.sleep(3)
@@ -36,7 +42,6 @@ def run_channel_quiz(channel_id, channel_data):
     for idx, q in enumerate(questions):
         options = q['options']
         correct_id = q['correct_option_id']
-        # सवाल का व्यक्तिगत टाइमर (10s, 15s या 30s)
         timer = int(q.get('time', 15))
 
         poll_res = requests.post(f"{BASE_URL}/sendPoll", json={
@@ -56,7 +61,7 @@ def run_channel_quiz(channel_id, channel_data):
         q_start = time.time()
         q_end = q_start + timer + 2
 
-        # लाइव जवाब ट्रैक करना
+        # लाइव जवाब कलेक्ट करना
         while time.time() < q_end:
             updates = requests.get(f"{BASE_URL}/getUpdates", params={
                 "offset": last_update_id + 1,
@@ -84,9 +89,9 @@ def run_channel_quiz(channel_id, channel_data):
 
             time.sleep(0.5)
 
-        time.sleep(2)  # अगले सवाल से पहले 2 सेकंड ब्रेक
+        time.sleep(2)
 
-    # 2. रिजल्ट गणना
+    # 2. रिजल्ट व लीडरबोर्ड गणना
     ranked = sorted(scores.values(), key=lambda x: (-x['correct'], x['total_time']))
 
     if not ranked:
@@ -111,12 +116,10 @@ def main():
         print("कोई क्विज़ डेटा नहीं मिला।")
         return
 
-    # अगर डेटा पुराना ऐरे फॉर्मेट है, तो सुरक्षित रूप से चलाएँ
     if isinstance(all_data, list):
         run_channel_quiz("@alakhaandeyClass", {"questions": all_data, "title": "Daily Quiz"})
         return
 
-    # वर्तमान UTC समय (घंटा और मिनट)
     now_utc = datetime.now(timezone.utc)
     cur_m = now_utc.minute
     cur_h = now_utc.hour
@@ -134,7 +137,6 @@ def main():
             if len(parts) >= 2:
                 cron_m = int(parts[0])
                 cron_h = int(parts[1])
-                # ±5 मिनट की विंडो (GitHub Actions कतार के लोड को संभालने के लिए)
                 if cron_h == cur_h and abs(cron_m - cur_m) <= 5:
                     should_run = True
 
