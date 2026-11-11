@@ -1,8 +1,8 @@
-name: Auto Quiz Broadcast
+name: Auto Multi-Channel Quiz
 
 on:
   schedule:
-    - cron: '10 5 * * *'
+    - cron: '40 5 * * *'
   workflow_dispatch:
 
 jobs:
