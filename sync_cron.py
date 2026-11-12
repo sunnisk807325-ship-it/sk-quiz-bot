@@ -22,7 +22,7 @@ def delete_cron_job(job_id):
         return
     requests.delete(f"https://api.cron-job.org/jobs/{job_id}", headers=CRON_HEADERS)
 
-def create_or_update_cron_job(ch_id, quiz_id, title, ist_time, existing_job_id=None):
+def create_or_update_cron_job(ch_id, sched_id, title, ist_time, existing_job_id=None):
     hour, minute = map(int, ist_time.split(":"))
     payload = {
         "job": {
@@ -51,7 +51,8 @@ def create_or_update_cron_job(ch_id, quiz_id, title, ist_time, existing_job_id=N
                     "ref": "main",
                     "inputs": {
                         "target_channel": ch_id,
-                        "target_quiz_id": quiz_id
+                        "target_quiz_id": sched_id,
+                        "run_mode": "scheduled"
                     }
                 })
             }
@@ -74,6 +75,34 @@ def main():
     if not os.path.exists("quiz.json"):
         return
 
+    with open("quiz.json", "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    scheduled_map = data.get("scheduled", {})
+    active_job_ids = set()
+
+    for ch_id, sched_list in scheduled_map.items():
+        if not isinstance(sched_list, list):
+            continue
+        for item in sched_list:
+            ist_time = item.get("ist_time")
+            old_job_id = item.get("cron_job_id")
+            if ist_time:
+                new_id = create_or_update_cron_job(ch_id, item["id"], item.get("title", "Quiz"), ist_time, old_job_id)
+                item["cron_job_id"] = new_id
+                if new_id:
+                    active_job_ids.add(new_id)
+
+    for job in get_all_existing_cron_jobs():
+        jid = job.get("jobId")
+        if jid and jid not in active_job_ids and "IST)" in job.get("title", ""):
+            delete_cron_job(jid)
+
+    with open("quiz.json", "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+if __name__ == "__main__":
+    main()
     with open("quiz.json", "r", encoding="utf-8") as f:
         all_data = json.load(f)
 
