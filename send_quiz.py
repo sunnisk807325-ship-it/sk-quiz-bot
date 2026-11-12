@@ -7,17 +7,15 @@ BOT_TOKEN = os.getenv("BOT_TOKEN")
 CRON_API_KEY = os.getenv("CRON_API_KEY")
 TARGET_CHANNEL = os.getenv("TARGET_CHANNEL", "").strip()
 TARGET_QUIZ_ID = os.getenv("TARGET_QUIZ_ID", "").strip()
+RUN_MODE = os.getenv("RUN_MODE", "scheduled").strip()
 API_URL = f"https://api.telegram.org/bot{BOT_TOKEN}"
+
+DEFAULT_END_MSG = "भाग लेने के लिए सभी विद्यार्थियों का हार्दिक धन्यवाद! 🎉\nअपना स्कोर ऊपर लीडरबोर्ड में चेक करें और चैनल को अपने दोस्तों के साथ ज़रूर शेयर करें! 🚀"
 
 def send_message(chat_id, text):
     url = f"{API_URL}/sendMessage"
-    payload = {
-        "chat_id": chat_id,
-        "text": text,
-        "parse_mode": "HTML"
-    }
-    res = requests.post(url, json=payload)
-    return res.json()
+    payload = {"chat_id": chat_id, "text": text, "parse_mode": "HTML"}
+    return requests.post(url, json=payload).json()
 
 def send_poll(chat_id, question, options, correct_option_id, open_period):
     url = f"{API_URL}/sendPoll"
@@ -30,8 +28,7 @@ def send_poll(chat_id, question, options, correct_option_id, open_period):
         "is_anonymous": False,
         "open_period": open_period
     }
-    res = requests.post(url, json=payload)
-    return res.json()
+    return requests.post(url, json=payload).json()
 
 def delete_cron_alarm(job_id):
     if not job_id or not CRON_API_KEY:
@@ -70,7 +67,6 @@ def collect_poll_answers(last_offset, poll_correct_map, scores):
             if uid not in scores:
                 scores[uid] = {"name": full_name, "correct": 0, "wrong": 0, "answered_polls": set()}
 
-            # एक ही पोल पर दोबारा वोट गिनने से रोकें
             if poll_id in scores[uid]["answered_polls"]:
                 continue
 
@@ -108,9 +104,8 @@ def run_single_quiz(ch_id, quiz):
 
     title = quiz.get("title", "Daily Quiz")
     desc = quiz.get("desc", "")
-    custom_end_msg = quiz.get("end_msg", "").strip()
+    custom_end_msg = quiz.get("end_msg", "").strip() or DEFAULT_END_MSG
 
-    # पुराने पेंडिंग अपडेट्स क्लियर करके ताज़ा ऑफसेट लें
     init_upd = requests.get(f"{API_URL}/getUpdates", params={"offset": -1}).json()
     last_offset = 0
     if init_upd.get("ok") and init_upd.get("result"):
@@ -138,71 +133,56 @@ def run_single_quiz(ch_id, quiz):
             poll_id = poll_res["result"]["poll"]["id"]
             poll_correct_map[poll_id] = correct_id
 
-        # टाइमर के दौरान लगातार वोट इकट्ठा करें
         end_wait = time.time() + q_time + 2
         while time.time() < end_wait:
             last_offset = collect_poll_answers(last_offset, poll_correct_map, scores)
             time.sleep(1.5)
 
-    # आखिरी सवाल के बचे हुए वोट 3 सेकंड और कलेक्ट करें
     time.sleep(3)
     last_offset = collect_poll_answers(last_offset, poll_correct_map, scores)
 
-    # 1. फाइनल लीडरबोर्ड भेजें
     leaderboard_msg = build_leaderboard_text(title, len(questions), scores)
     send_message(ch_id, leaderboard_msg)
     time.sleep(2)
 
-    # 2. ऐप में लिखा गया कस्टम अंतिम मैसेज भेजें
-    if custom_end_msg:
-        end_text = f"🏁 <b>{title} समाप्त हुआ!</b>\n\n{custom_end_msg}"
-    else:
-        end_text = f"🏁 <b>{title}</b> समाप्त हुआ!\nभाग लेने के लिए सभी का धन्यवाद! 🎉"
+    end_text = f"🏁 <b>{title} समाप्त हुआ!</b>\n\n{custom_end_msg}"
     send_message(ch_id, end_text)
 
 def main():
     if not os.path.exists("quiz.json"):
-        print("quiz.json नहीं मिली!")
         return
 
     with open("quiz.json", "r", encoding="utf-8") as f:
-        all_quizzes = json.load(f)
+        data = json.load(f)
 
-    if not all_quizzes:
-        print("कोई क्विज़ डेटा नहीं है।")
-        return
+    if RUN_MODE == "original":
+        # ओरिजिनल क्विज़ चलाएँ — चलने के बाद इसे डिलीट न करें
+        orig_list = data.get("originals", {}).get(TARGET_CHANNEL, [])
+        for quiz in orig_list:
+            if quiz.get("id") == TARGET_QUIZ_ID:
+                run_single_quiz(TARGET_CHANNEL, quiz)
+                break
+    else:
+        # शेड्यूल्ड क्विज़ चलाएँ — चलने के बाद अलार्म और शेड्यूल्ड लिस्ट से हटाएँ (ओरिजिनल सुरक्षित रहेगा)
+        sched_map = data.get("scheduled", {})
+        if TARGET_CHANNEL not in sched_map:
+            return
 
-    channels_to_check = [TARGET_CHANNEL] if (TARGET_CHANNEL and TARGET_CHANNEL in all_quizzes) else list(all_quizzes.keys())
-    modified = False
-
-    for ch_id in list(channels_to_check):
-        channel_data = all_quizzes.get(ch_id)
-        if not channel_data:
-            continue
-
-        quiz_list = channel_data if isinstance(channel_data, list) else [channel_data]
-        remaining_quizzes = []
-
-        for quiz in quiz_list:
+        remaining = []
+        modified = False
+        for quiz in sched_map[TARGET_CHANNEL]:
             if TARGET_QUIZ_ID and quiz.get("id") != TARGET_QUIZ_ID:
-                remaining_quizzes.append(quiz)
+                remaining.append(quiz)
                 continue
 
-            # क्विज़ चलाएँ और लीडरबोर्ड + अंतिम मैसेज भेजें
-            run_single_quiz(ch_id, quiz)
-
-            # चलने के बाद cron-job.org से अलार्म डिलीट करें और हिस्ट्री से हटाएँ
+            run_single_quiz(TARGET_CHANNEL, quiz)
             delete_cron_alarm(quiz.get("cron_job_id"))
             modified = True
 
-        if remaining_quizzes:
-            all_quizzes[ch_id] = remaining_quizzes
-        elif ch_id in all_quizzes:
-            del all_quizzes[ch_id]
-
-    if modified:
-        with open("quiz.json", "w", encoding="utf-8") as f:
-            json.dump(all_quizzes, f, ensure_ascii=False, indent=2)
+        if modified:
+            data["scheduled"][TARGET_CHANNEL] = remaining
+            with open("quiz.json", "w", encoding="utf-8") as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
 
 if __name__ == "__main__":
     main()
