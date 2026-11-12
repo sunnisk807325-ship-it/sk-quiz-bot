@@ -1,148 +1,91 @@
 import os
 import json
 import time
-from datetime import datetime, timezone
 import requests
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-BASE_URL = f"https://api.telegram.org/bot{BOT_TOKEN}"
+TARGET_CHANNEL = os.getenv("TARGET_CHANNEL", "").strip()
+TARGET_QUIZ_ID = os.getenv("TARGET_QUIZ_ID", "").strip()
+API_URL = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
-def load_quiz_data():
-    if not os.path.exists('quiz.json'):
-        return {}
-    with open('quiz.json', 'r', encoding='utf-8') as f:
-        try:
-            return json.load(f)
-        except Exception:
-            return {}
+def send_message(chat_id, text):
+    url = f"{API_URL}/sendMessage"
+    payload = {
+        "chat_id": chat_id,
+        "text": text,
+        "parse_mode": "HTML"
+    }
+    res = requests.post(url, json=payload)
+    return res.json()
 
-def run_channel_quiz(channel_id, channel_data):
-    questions = channel_data.get('questions', [])
-    quiz_title = channel_data.get('title', 'Daily Live Quiz')
-    quiz_desc = channel_data.get('desc', '')  # ऐप से आया हुआ विवरण
+def send_poll(chat_id, question, options, correct_option_id, open_period):
+    url = f"{API_URL}/sendPoll"
+    payload = {
+        "chat_id": chat_id,
+        "question": question[:300],
+        "options": [opt[:100] for opt in options],
+        "type": "quiz",
+        "correct_option_id": correct_option_id,
+        "is_anonymous": False,
+        "open_period": open_period
+    }
+    res = requests.post(url, json=payload)
+    return res.json()
+
+def run_single_quiz(ch_id, quiz):
+    questions = quiz.get("questions", [])
     if not questions:
         return
 
-    # 1. स्टार्ट बैनर (टाइटल + डिस्क्रिप्शन)
-    banner_text = f"🔥 <b>{quiz_title}</b> शुरू हो रहा है!\n"
-    if quiz_desc:
-        banner_text += f"\n📝 <i>{quiz_desc}</i>\n"
-    banner_text += f"\n📊 कुल प्रश्न: {len(questions)}\n⚠️ <i>लाइव लीडरबोर्ड चालू है, तेजी से और सही उत्तर दें!</i>"
+    title = quiz.get("title", "Daily Quiz")
+    desc = quiz.get("desc", "")
+    
+    intro_text = f"🚀 <b>{title}</b> शुरू हो रहा है!\n"
+    if desc:
+        intro_text += f"📝 <i>{desc}</i>\n"
+    intro_text += f"\nकुल प्रश्न: <b>{len(questions)}</b>\nतैयार हो जाइए! 👇"
 
-    requests.post(f"{BASE_URL}/sendMessage", json={
-        "chat_id": channel_id,
-        "text": banner_text,
-        "parse_mode": "HTML"
-    })
+    send_message(ch_id, intro_text)
     time.sleep(3)
 
-    scores = {}
-    last_update_id = 0
+    for idx, q in enumerate(questions, 1):
+        q_text = f"Q{idx}. {q['question']}"
+        opts = q["options"]
+        correct_id = q.get("correct_option_id", 0)
+        q_time = int(q.get("time", 15))
 
-    for idx, q in enumerate(questions):
-        options = q['options']
-        correct_id = q['correct_option_id']
-        timer = int(q.get('time', 15))
+        send_poll(ch_id, q_text, opts, correct_id, q_time)
+        time.sleep(q_time + 2)
 
-        poll_res = requests.post(f"{BASE_URL}/sendPoll", json={
-            "chat_id": channel_id,
-            "question": f"[{idx + 1}/{len(questions)}] {q['question']}",
-            "options": options,
-            "type": "quiz",
-            "correct_option_id": correct_id,
-            "open_period": timer,
-            "is_anonymous": False
-        }).json()
-
-        if not poll_res.get('ok'):
-            continue
-
-        poll_id = poll_res['result']['poll']['id']
-        q_start = time.time()
-        q_end = q_start + timer + 2
-
-        # लाइव जवाब कलेक्ट करना
-        while time.time() < q_end:
-            updates = requests.get(f"{BASE_URL}/getUpdates", params={
-                "offset": last_update_id + 1,
-                "timeout": 1
-            }).json()
-
-            if updates.get('ok'):
-                for item in updates.get('result', []):
-                    last_update_id = item['update_id']
-                    if 'poll_answer' in item:
-                        ans = item['poll_answer']
-                        if ans.get('poll_id') == poll_id:
-                            user = ans['user']
-                            uid = user['id']
-                            uname = user.get('first_name', 'Student')
-                            selected = ans['option_ids'][0] if ans['option_ids'] else None
-
-                            if uid not in scores:
-                                scores[uid] = {"name": uname, "correct": 0, "total_time": 0.0}
-
-                            time_spent = round(time.time() - q_start, 1)
-                            scores[uid]['total_time'] += time_spent
-                            if selected == correct_id:
-                                scores[uid]['correct'] += 1
-
-            time.sleep(0.5)
-
-        time.sleep(2)
-
-    # 2. रिजल्ट व लीडरबोर्ड गणना
-    ranked = sorted(scores.values(), key=lambda x: (-x['correct'], x['total_time']))
-
-    if not ranked:
-        result_text = f"🏁 <b>{quiz_title} समाप्त हुआ!</b>\n\nकिसी छात्र ने उत्तर सबमिट नहीं किया।"
-    else:
-        result_text = f"🏆 <b>क्विज़ परिणाम: {quiz_title}</b> 🏆\n\n"
-        medals = ["🥇", "🥈", "🥉"]
-        for i, u in enumerate(ranked[:10]):
-            icon = medals[i] if i < 3 else f"{i + 1}."
-            result_text += f"{icon} <b>{u['name']}</b> — {u['correct']}/{len(questions)} सही ({u['total_time']}s)\n"
-        result_text += "\n👏 <i>शानदार प्रदर्शन! अगले टेस्ट के लिए तैयार रहें।</i>"
-
-    requests.post(f"{BASE_URL}/sendMessage", json={
-        "chat_id": channel_id,
-        "text": result_text,
-        "parse_mode": "HTML"
-    })
+    end_text = f"🏁 <b>{title}</b> समाप्त हुआ!\nभाग लेने के लिए सभी का धन्यवाद! 🎉"
+    send_message(ch_id, end_text)
 
 def main():
-    all_data = load_quiz_data()
-    if not all_data:
-        print("कोई क्विज़ डेटा नहीं मिला।")
+    if not os.path.exists("quiz.json"):
+        print("quiz.json नहीं मिली!")
         return
 
-    if isinstance(all_data, list):
-        run_channel_quiz("@alakhaandeyClass", {"questions": all_data, "title": "Daily Quiz"})
+    with open("quiz.json", "r", encoding="utf-8") as f:
+        all_quizzes = json.load(f)
+
+    if not all_quizzes:
+        print("कोई क्विज़ डेटा नहीं है।")
         return
 
-    now_utc = datetime.now(timezone.utc)
-    cur_m = now_utc.minute
-    cur_h = now_utc.hour
+    channels_to_check = [TARGET_CHANNEL] if (TARGET_CHANNEL and TARGET_CHANNEL in all_quizzes) else list(all_quizzes.keys())
 
-    is_manual_trigger = os.getenv("GITHUB_EVENT_NAME") == "workflow_dispatch"
+    for ch_id in channels_to_check:
+        channel_data = all_quizzes.get(ch_id)
+        if not channel_data:
+            continue
 
-    for ch_id, ch_info in all_data.items():
-        cron = ch_info.get('cron')
-        should_run = False
+        # नए मल्टी-क्विज़ लिस्ट फॉर्मेट को हैंडल करना
+        quiz_list = channel_data if isinstance(channel_data, list) else [channel_data]
 
-        if is_manual_trigger:
-            should_run = True
-        elif cron:
-            parts = cron.split()
-            if len(parts) >= 2:
-                cron_m = int(parts[0])
-                cron_h = int(parts[1])
-                if cron_h == cur_h and abs(cron_m - cur_m) <= 5:
-                    should_run = True
+        for quiz in quiz_list:
+            if TARGET_QUIZ_ID and quiz.get("id") != TARGET_QUIZ_ID:
+                continue
+            run_single_quiz(ch_id, quiz)
 
-        if should_run:
-            print(f"Running quiz for {ch_id}")
-            run_channel_quiz(ch_id, ch_info)
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
