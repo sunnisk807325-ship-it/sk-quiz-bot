@@ -1,9 +1,16 @@
 name: Auto Multi-Channel Quiz
 
 on:
-  schedule:
-    - cron: '25 20 * * *'
   workflow_dispatch:
+    inputs:
+      target_channel:
+        description: 'Channel ID to trigger'
+        required: false
+        default: ''
+      target_quiz_id:
+        description: 'Specific Quiz ID to trigger'
+        required: false
+        default: ''
 
 jobs:
   run-quiz:
@@ -23,4 +30,6 @@ jobs:
       - name: Run Quiz Broadcast
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          TARGET_CHANNEL: ${{ github.event.inputs.target_channel }}
+          TARGET_QUIZ_ID: ${{ github.event.inputs.target_quiz_id }}
         run: python send_quiz.py
