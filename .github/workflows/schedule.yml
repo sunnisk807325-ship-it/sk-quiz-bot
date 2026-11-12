@@ -76,12 +76,12 @@ jobs:
           TARGET_QUIZ_ID: ${{ github.event.inputs.target_quiz_id }}
           RUN_MODE: ${{ github.event.inputs.run_mode }}
         run: python send_quiz.py
+
       - name: Update History After Run
         run: |
           git config user.name "Quiz Bot Cleanup"
           git config user.email "bot@users.noreply.github.com"
-          git fetch origin main
-          git checkout -B main
           git add quiz.json
           git commit -m "chore: clean completed scheduled quiz [skip ci]" || exit 0
-          git push -f origin main
+          git pull --rebase origin main
+          git push origin main
