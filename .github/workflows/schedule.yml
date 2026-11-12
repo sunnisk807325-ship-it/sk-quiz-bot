@@ -1,6 +1,9 @@
 name: Auto Multi-Channel Quiz
 
 on:
+  push:
+    paths:
+      - 'quiz.json'
   workflow_dispatch:
     inputs:
       target_channel:
@@ -12,8 +15,41 @@ on:
         required: false
         default: ''
 
+permissions:
+  contents: write
+
 jobs:
+  sync-alarms:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Sync Cron-Job.org Alarms
+        env:
+          GH_PAT: ${{ secrets.GITHUB_TOKEN }}
+          REPO_NAME: ${{ github.repository }}
+        run: python sync_cron.py
+
+      - name: Save Cron Job IDs back to quiz.json
+        run: |
+          git config user.name "Quiz Bot Sync"
+          git config user.email "bot@users.noreply.github.com"
+          git add quiz.json
+          git commit -m "chore: update cron_job_ids [skip ci]" || exit 0
+          git push
+
   run-quiz:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
