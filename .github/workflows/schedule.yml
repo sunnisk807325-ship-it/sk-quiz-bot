@@ -36,7 +36,8 @@ jobs:
 
       - name: Sync Cron-Job.org Alarms
         env:
-          GH_PAT: ${{ secrets.GITHUB_TOKEN }}
+          GH_PAT: ${{ secrets.GH_PAT }}
+          CRON_API_KEY: ${{ secrets.CRON_API_KEY }}
           REPO_NAME: ${{ github.repository }}
         run: python sync_cron.py
 
