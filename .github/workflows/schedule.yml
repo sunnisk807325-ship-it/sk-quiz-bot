@@ -14,6 +14,10 @@ on:
         description: 'Specific Quiz ID to trigger'
         required: false
         default: ''
+      run_mode:
+        description: 'original or scheduled'
+        required: false
+        default: 'scheduled'
 
 permissions:
   contents: write
@@ -70,13 +74,14 @@ jobs:
           CRON_API_KEY: ${{ secrets.CRON_API_KEY }}
           TARGET_CHANNEL: ${{ github.event.inputs.target_channel }}
           TARGET_QUIZ_ID: ${{ github.event.inputs.target_quiz_id }}
+          RUN_MODE: ${{ github.event.inputs.run_mode }}
         run: python send_quiz.py
 
-      - name: Remove Completed Quiz from History
+      - name: Update History After Run
         run: |
           git config user.name "Quiz Bot Cleanup"
           git config user.email "bot@users.noreply.github.com"
           git pull --rebase
           git add quiz.json
-          git commit -m "chore: auto-remove completed quiz [skip ci]" || exit 0
+          git commit -m "chore: clean completed scheduled quiz [skip ci]" || exit 0
           git push
